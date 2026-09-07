@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
+import sys
 
 from dataclass_wizard.v0 import YAMLWizard
 from mediascan.genres import Genre
@@ -35,7 +36,11 @@ class MediaTestConfigUtil:
     yaml_filename = "mediatest-config.yaml"
 
     def load_config(self, path: Path | None = None) -> MediaTestConfig:
-        config_path = path or Path(__file__).with_name(self.yaml_filename)
+        if path is not None:
+            config_path = path
+        else:
+            source_config_path = Path(__file__).resolve().parents[2] / self.yaml_filename
+            config_path = source_config_path if source_config_path.exists() else Path(sys.prefix) / self.yaml_filename
         with config_path.open("r", encoding="utf-8") as config_file:
             config = MediaTestConfig.from_yaml(config_file)  # pyright: ignore[reportUnknownMemberType]
         if isinstance(config, list):

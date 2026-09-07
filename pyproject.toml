@@ -59,7 +59,10 @@ Repository = "https://github.com/bretttolbert/moongas-py-mediatest.git"
 Changelog = "https://github.com/bretttolbert/moongas-py-mediatest/blob/master/CHANGELOG.md"
 
 [tool.setuptools.package-data]
-mediatest = [ 'py.typed', '*.yaml']
+mediatest = [ 'py.typed']
+
+[tool.setuptools.data-files]
+"." = ["mediatest-config.yaml"]
 
 [tool.setuptools.packages.find]
 where = ["src", "."]
