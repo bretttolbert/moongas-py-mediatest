@@ -92,7 +92,8 @@ addopts = [
   "--ignore=dist",
   "--ignore=__pycache__",
   "--ignore=scripts",
-  "--ignore=out"
+  "--ignore=out",
+  "--ignore=tests/mediatests/"
 ]
 
 [tool.ruff]
