@@ -1,231 +1,60 @@
+from dataclasses import dataclass
 from datetime import datetime
+from pathlib import Path
 
+from dataclass_wizard.v0 import YAMLWizard
 from mediascan.genres import Genre
 
-from mediatest.path_utils import KILOBYTE
 
-# For running tests on the yaml file output by mediascan
-# E.g. for ID3-tag tests
-# E.g. testing if year is a valid year or something weird like 0
-MEDIASCAN_FILES_PATH = "../mediascan-files.yaml"
+@dataclass
+class MediaTestConfig(YAMLWizard):
+    mediascan_files_path: str
+    minimum_filesize: int
+    exts_media: list[str]
+    exts_art: list[str]
+    exts_lyrics: list[str]
+    exts_metadata: list[str]
+    exts_extra: list[str]
+    lib_genres_mode_blacklist: bool
+    libs_media_path: list[str]
+    libs_expected_media_count: list[int]
+    libs_expected_lrc_count: list[int]
+    libs_total_filesize_limit_gb: list[int]
+    libs_expected_filesize_gb: list[int]
+    libs_genres: list[list[Genre]]
 
 
+class MediaTestConfigUtil:
+    """Utility class for loading mediatest configuration from YAML."""
+
+    yaml_filename = "mediatest-config.yaml"
+
+    def load_config(self, path: Path | None = None) -> MediaTestConfig:
+        config_path = path or Path(__file__).with_name(self.yaml_filename)
+        with config_path.open("r", encoding="utf-8") as config_file:
+            config = MediaTestConfig.from_yaml(config_file)  # pyright: ignore[reportUnknownMemberType]
+        if isinstance(config, list):
+            return config[0]
+        return config
+
+
+CONFIG = MediaTestConfigUtil().load_config()
+
+MEDIASCAN_FILES_PATH = CONFIG.mediascan_files_path
 PRESENT_YEAR: int = datetime.now().year
-MINIMUM_FILESIZE = 10 * KILOBYTE
-EXTS_MEDIA = ["mp3", "m4a"]
-EXTS_ART = [
-    "jpg",
-    "webp",
-    "png",
-    "xcf",
-]  # intentionally lowercase for consistency, ".JPG" not allowed, etc.
-EXTS_LYRICS = ["lrc", "txt"]
-EXTS_METADATA = ["yaml"]  # artist metadata files
-EXTS_EXTRA = ["pdf"]  # some albums include pdf booklets
+MINIMUM_FILESIZE = CONFIG.minimum_filesize
+EXTS_MEDIA = CONFIG.exts_media
+EXTS_ART = CONFIG.exts_art
+EXTS_LYRICS = CONFIG.exts_lyrics
+EXTS_METADATA = CONFIG.exts_metadata
+EXTS_EXTRA = CONFIG.exts_extra
 ALLOWED_EXTS = EXTS_MEDIA + EXTS_ART + EXTS_LYRICS + EXTS_METADATA + EXTS_EXTRA
 
-LIB_GENRES_MODE_BLACKLIST = False  # Set to True if you want LIBS_GENRES lists to be blacklists instead of whitelists (default)
-
-# Multiple music libraries are supported.
-# LIB1 (/data/Music) is my primary music library
-# LIB2 (/data/MusicOther) is for any audio that is not music (lectures, speeches, podcasts)
-# Variables beginning with LIBS_ are arrays of size LIB_COUNT
-LIB_COUNT = 2
-LIBS_MEDIA_PATH = ["/data/Music/", "/data/MusicOther/"]
-LIBS_EXPECTED_MEDIA_COUNT = [21666, 0]
-LIBS_EXPECTED_LRC_COUNT = [11547, 0]
-LIBS_TOTAL_FILESIZE_LIMIT_GB = [200, 1]
-LIBS_EXPECTED_FILESIZE_GB = [167, 0]
-
-# Genre constraints may be enforced to limit a library to specified genres
-# With current implementation, a given genre must belong to a single library
-# This becomes complicated when an artist spans multiple genres
-# I will probably only use this to keep things like lectures, speeches and podcasts out
-# of the primary Music directory.
-# Hence currently basically all of the genres are in LIB1.
-LIBS_GENRES: list[list[Genre]] = [
-    [
-        Genre.AcidPunk,
-        Genre.AcidRock,
-        Genre.Afrobeat,
-        Genre.Afropop,
-        Genre.Alternative,
-        Genre.AlternativeMetal,
-        Genre.AlternativeRock,
-        Genre.Ambient,
-        Genre.ArtPop,
-        Genre.ArtPunk,
-        Genre.ArtRock,
-        Genre.Bachata,
-        Genre.BigBand,
-        Genre.BlackMetal,
-        Genre.Bluegrass,
-        Genre.Blues,
-        Genre.BluesRock,
-        Genre.Bollywood,
-        Genre.BossaNova,
-        Genre.Britpop,
-        Genre.Cajun,
-        Genre.Celtic,
-        Genre.CelticRock,
-        Genre.Chillwave,
-        Genre.Chinese,
-        Genre.Classical,
-        Genre.ClassicCountry,
-        Genre.ClassicPop,
-        Genre.ClassicProg,
-        Genre.ClassicRock,
-        Genre.Comedy,
-        Genre.Country,
-        Genre.CountryPop,
-        Genre.Cumbia,
-        Genre.Dabke,
-        Genre.DanceElectronic,
-        Genre.DeathMetal,
-        Genre.DeepHouse,
-        Genre.DirtyBlues,
-        Genre.Disco,
-        Genre.DixielandJazz,
-        Genre.DoomMetal,
-        Genre.DooWop,
-        Genre.Downtempo,
-        Genre.DreamPop,
-        Genre.Drumline,
-        Genre.EasyListening,
-        Genre.Electronic,
-        Genre.Electronica,
-        Genre.ElectronicInstrumental,
-        Genre.Electropop,
-        Genre.EmoPopRock,
-        Genre.Eurodance,
-        Genre.Experimental,
-        Genre.ExperimentalAmbientRock,
-        Genre.Folk,
-        Genre.FolkPop,
-        Genre.FolkPunk,
-        Genre.FolkRock,
-        Genre.FolkRockJazz,
-        Genre.FrenchHouse,
-        Genre.Funk,
-        Genre.FunkInstrumental,
-        Genre.FunkMetal,
-        Genre.FunkRock,
-        Genre.FunkSoul,
-        Genre.Funktronica,
-        Genre.GlamMetal,
-        Genre.GlamRock,
-        Genre.Gospel,
-        Genre.GothRock,
-        Genre.Grindcore,
-        Genre.Grunge,
-        Genre.HeavyMetal,
-        Genre.HipHop,
-        Genre.HipHopElectronic,
-        Genre.HipHopFrançais,
-        Genre.HipHopInstrumental,
-        Genre.HipHopReggae,
-        Genre.HonkyTonk,
-        Genre.HorrorPunk,
-        Genre.House,
-        Genre.IndieFolk,
-        Genre.IndiePop,
-        Genre.IndieRock,
-        Genre.Industrial,
-        Genre.IndustrialMetal,
-        Genre.JamRock,
-        Genre.JapaneseRock,
-        Genre.Jazz,
-        Genre.JazzFunk,
-        Genre.JazzPop,
-        Genre.JazzRock,
-        Genre.KoreanRock,
-        Genre.KPop,
-        Genre.Latin,
-        Genre.LatinFunk,
-        Genre.LatinPop,
-        Genre.Literature,
-        Genre.Merengue,
-        Genre.Metalcore,
-        Genre.Motown,
-        Genre.NeoSoul,
-        Genre.NewAge,
-        Genre.NewDisco,
-        Genre.NewWave,
-        Genre.NewWaveFrançais,
-        Genre.NoiseRock,
-        Genre.Norteño,
-        Genre.NuJazz,
-        Genre.NuJazzInstrumental,
-        Genre.NuMetal,
-        Genre.NuMetalFrançais,
-        Genre.Political,
-        Genre.Pop,
-        Genre.PopFrançaise,
-        Genre.PopItaliano,
-        Genre.PopPunk,
-        Genre.PopRock,
-        Genre.PostBlackMetal,
-        Genre.PostGrunge,
-        Genre.PostHardcore,
-        Genre.PostIndustrial,
-        Genre.PostMetal,
-        Genre.PostPunk,
-        Genre.PostRock,
-        Genre.PowerPop,
-        Genre.ProgressiveMetal,
-        Genre.ProgressivePop,
-        Genre.ProgRock,
-        Genre.ProtoPunk,
-        Genre.PsychedelicFolk,
-        Genre.PsychedelicPop,
-        Genre.PsychedelicRock,
-        Genre.Punk,
-        Genre.PunkFrançais,
-        Genre.PunkRock,
-        Genre.Reggae,
-        Genre.ReggaeRock,
-        Genre.Reggaeton,
-        Genre.RnB,
-        Genre.RnBFrançais,
-        Genre.RnBFunk,
-        Genre.RnBInstrumental,
-        Genre.RnBSoul,
-        Genre.Rockabilly,
-        Genre.RockBrasileiro,
-        Genre.RockEnEspañol,
-        Genre.RockFrançais,
-        Genre.RockItaliano,
-        Genre.RussianFolk,
-        Genre.RussianPop,
-        Genre.Salsa,
-        Genre.Shoegaze,
-        Genre.SkaPunk,
-        Genre.SludgeMetal,
-        Genre.SmoothJazz,
-        Genre.SoftRock,
-        Genre.SophistiPop,
-        Genre.Soundtrack,
-        Genre.SouthernPunkRock,
-        Genre.SouthernRock,
-        Genre.SpaceAgePop,
-        Genre.SpeechSample,
-        Genre.StonerRock,
-        Genre.SufiRock,
-        Genre.SurfPunk,
-        Genre.SurfRock,
-        Genre.Swing,
-        Genre.SynthPop,
-        Genre.Techno,
-        Genre.ThrashMetal,
-        Genre.TraditionalPop,
-        Genre.Trance,
-        Genre.TripHop,
-        Genre.UkrainianPop,
-        Genre.Urbano,
-        Genre.Volksmusik,
-        Genre.World,
-        Genre.Zamrock,
-        Genre.Zydeco,
-    ],
-    [],
-]
+LIB_GENRES_MODE_BLACKLIST = CONFIG.lib_genres_mode_blacklist
+LIB_COUNT = len(CONFIG.libs_media_path)
+LIBS_MEDIA_PATH = CONFIG.libs_media_path
+LIBS_EXPECTED_MEDIA_COUNT = CONFIG.libs_expected_media_count
+LIBS_EXPECTED_LRC_COUNT = CONFIG.libs_expected_lrc_count
+LIBS_TOTAL_FILESIZE_LIMIT_GB = CONFIG.libs_total_filesize_limit_gb
+LIBS_EXPECTED_FILESIZE_GB = CONFIG.libs_expected_filesize_gb
+LIBS_GENRES = CONFIG.libs_genres
