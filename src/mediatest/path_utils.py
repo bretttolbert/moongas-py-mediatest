@@ -1,12 +1,9 @@
 import os
 from pathlib import Path
-from typing import List
-
 
 KILOBYTE = 10**3
 MEGABYTE = 10**6
 GIGABYTE = 10**9
-
 
 
 def get_file_ext(path: str | Path) -> str:
@@ -21,13 +18,13 @@ def get_path_depth(path: str | Path) -> int:
     return len(str(path).strip(os.path.sep).split(os.path.sep))
 
 
-def is_dir_with_subdirs(path: str | Path, strict: bool=False) -> bool:
+def is_dir_with_subdirs(path: str | Path, strict: bool = False) -> bool:
     """
     With strict=False:
     Returns True if path points to a directory containing at least one subdirectory
     and zero or more files
     With strict=True:
-    Returns True if path points to a directory containing at least one subdirectory 
+    Returns True if path points to a directory containing at least one subdirectory
     and only containing subdirectories (i.e. zero files)
     """
     if not os.path.isdir(path):
@@ -42,7 +39,7 @@ def is_dir_with_subdirs(path: str | Path, strict: bool=False) -> bool:
     return subdir_count > 0
 
 
-def is_dir_with_files(path: Path, file_exts: List[str]) -> bool:
+def is_dir_with_files(path: Path, file_exts: list[str]) -> bool:
     """Returns True if directory contains at least one file with
     a file extension matching any of the extensions in file_exts
     and the directory does not contain subdirectories

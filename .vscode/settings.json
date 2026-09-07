@@ -1,10 +1,12 @@
 {
     "[python]": {
         "editor.defaultFormatter": "charliermarsh.ruff",
-        "editor.formatOnSave": true,
+        "editor.formatOnSave": false,
         "editor.codeActionsOnSave": {
             "source.fixAll.ruff": "explicit",
-            "source.organizeImports.ruff": "explicit"
+            "source.organizeImports.ruff": "explicit",
+            "source.fixAll": "never",
+            "source.organizeImports": "never"
         }
     },
     "files.exclude": {
@@ -44,18 +46,24 @@
     "python.testing.autoTestDiscoverOnSaveEnabled": true,
     "python.testing.pytestPath": "pytest",
     "python.testing.cwd": "${workspaceFolder}",
-    "python.analysis.diagnosticMode": "workspace",
+    "python.analysis.diagnosticMode": "openFilesOnly",
     "python.analysis.stubPath": "typings",
     "python.analysis.exclude": [
-        "**/*.pyi",
+        ".venv.314",
+        "**/__pycache__",
         "**/.env",
         "**/.git",
-        "**/.venv",
+        "**/.git",
+        "**/.pytest_cache",
         "**/.venv.*",
-        "**/node_modules",
-        "**/__pycache__",
+        "**/.venv",
+        "**/*.pyi",
         "**/.*",
-        ".venv.314"
+        "**/build",
+        "**/dist",
+        "**/node_modules",
+        "**/node_modules",
+        "**/venv",
     ],
     "python.analysis.typeCheckingMode": "strict",
     "python.analysis.importFormat": "absolute",

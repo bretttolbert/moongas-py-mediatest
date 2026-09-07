@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Dict, List, Optional, Set
+from typing import Optional, Set
 
 import pytest
 from mediascan.genres import Genre
@@ -7,7 +7,15 @@ from mediascan.mediafile import MediaFile
 from mediascan.mediafiles import MediaFiles
 from mediascan.mediafiles_loader import load_files_yaml
 
-from tests.test_config import *
+from mediatest.config import (
+    LIB_COUNT,
+    LIB_GENRES_MODE_BLACKLIST,
+    LIBS_GENRES,
+    LIBS_MEDIA_PATH,
+    MEDIASCAN_FILES_PATH,
+    MINIMUM_FILESIZE,
+    PRESENT_YEAR,
+)
 
 files = load_files_yaml(MEDIASCAN_FILES_PATH)
 
@@ -15,8 +23,8 @@ files = load_files_yaml(MEDIASCAN_FILES_PATH)
 NO_ERRORS = "(no errors)"
 
 
-def run_tests() -> List[str]:
-    errors: List[str] = []
+def run_tests() -> list[str]:
+    errors: list[str] = []
     errors += run_test_mediafile("artist")
     errors += run_test_mediafile("albumartist")
     errors += run_test_mediafile("album", "albumartist")
@@ -68,7 +76,7 @@ def test_mediafile_size_gt_min(file: MediaFile):
     assert file.size >= MINIMUM_FILESIZE, f"{file.path}"
 
 
-def get_all_genre_strings() -> List[str]:
+def get_all_genre_strings() -> list[str]:
     return [g.value for g in Genre]
 
 
@@ -153,7 +161,7 @@ def test_mediafile_albumartist_same_for_every_track_in_every_album():
     Different tracks may have different artists e.g. "Dr. Dre feat. Snoop Dog"
     but all tracks in a an albums should have the same albumartist e.g. "Dr. Dre"
     """
-    albums: Dict[str, str] = {}
+    albums: dict[str, str] = {}
     for file in files.files:
         albumkey = f"{file.albumartist} - {file.album} [{file.year}]"
         if albumkey in albums:
@@ -176,7 +184,7 @@ def test_mediafile_albumartist_matches_artist_directory_name():
     but all tracks under a given artist folder e.g. "Dr_ Dre" should have the same albumartist e.g. "Dr. Dre"
     and it should match the artist directory name (after escaping)
     """
-    artists: Dict[str, str] = {}
+    artists: dict[str, str] = {}
     for file in files.files:
         artist_dir_name = str(Path(file.path).parent.parent.name)
         albumartist_escaped = escape_artist_name(file.albumartist)
@@ -188,15 +196,15 @@ def test_mediafile_albumartist_matches_artist_directory_name():
             artists[artist_dir_name] = albumartist_escaped
 
 
-def run_test_mediafile(tag_type: str, tag_type_2: Optional[str] = None) -> List[str]:
+def run_test_mediafile(tag_type: str, tag_type_2: Optional[str] = None) -> list[str]:
     """
     tag_type: the tag to test
     tag_type_2: optional secondary qualifier, makes it skip validation if tag_type_2
     doesn't match. E.g. tag_type="album" and tag_type_2="artist" => only compare
     two albums if the artist is the same for both of them.
     """
-    errors: List[str] = []
-    grouped: Dict[str, List[MediaFile]] = {}
+    errors: list[str] = []
+    grouped: dict[str, list[MediaFile]] = {}
     for file in files.files:
         key = str(getattr(file, tag_type)).upper()
         if key in grouped:

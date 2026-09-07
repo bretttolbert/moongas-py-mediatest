@@ -1,10 +1,8 @@
-from typing import List
 from datetime import datetime
 
 from mediascan.genres import Genre
 
 from mediatest.path_utils import KILOBYTE
-
 
 # For running tests on the yaml file output by mediascan
 # E.g. for ID3-tag tests
@@ -26,9 +24,7 @@ EXTS_METADATA = ["yaml"]  # artist metadata files
 EXTS_EXTRA = ["pdf"]  # some albums include pdf booklets
 ALLOWED_EXTS = EXTS_MEDIA + EXTS_ART + EXTS_LYRICS + EXTS_METADATA + EXTS_EXTRA
 
-LIB_GENRES_MODE_BLACKLIST = (
-    False  # Set to True if you want LIBS_GENRES lists to be blacklists instead of whitelists (default)
-)
+LIB_GENRES_MODE_BLACKLIST = False  # Set to True if you want LIBS_GENRES lists to be blacklists instead of whitelists (default)
 
 # Multiple music libraries are supported.
 # LIB1 (/data/Music) is my primary music library
@@ -47,7 +43,7 @@ LIBS_EXPECTED_FILESIZE_GB = [167, 0]
 # I will probably only use this to keep things like lectures, speeches and podcasts out
 # of the primary Music directory.
 # Hence currently basically all of the genres are in LIB1.
-LIBS_GENRES: List[List[Genre]] = [
+LIBS_GENRES: list[list[Genre]] = [
     [
         Genre.AcidPunk,
         Genre.AcidRock,

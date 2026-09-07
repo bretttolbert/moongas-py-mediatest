@@ -1,9 +1,8 @@
 import os
 from pathlib import Path
 
+from mediatest.config import ALLOWED_EXTS, LIB_COUNT, LIBS_MEDIA_PATH
 from mediatest.path_utils import get_file_ext
-
-from tests.test_config import *
 
 # TODO: Write test to disallow periods in filenames except as file extension separator
 # TODO: Validate filenames, prohibited chars in filenames
@@ -19,8 +18,8 @@ from tests.test_config import *
 FILENAME_PROHIBITED_CHARS = "’？?"
 
 
-def get_media_file_paths(media_lib_path: Path) -> List[Path]:
-    ret : set[Path] = set()
+def get_media_file_paths(media_lib_path: Path) -> list[Path]:
+    ret: set[Path] = set()
     for root, _, files in os.walk(media_lib_path, topdown=False):
         for name in files:
             fullpath = Path(root) / name
@@ -28,12 +27,12 @@ def get_media_file_paths(media_lib_path: Path) -> List[Path]:
     return list(ret)
 
 
-def pytest_generate_tests(metafunc): # type: ignore
-    media_file_paths : List[Path] = []
+def pytest_generate_tests(metafunc):  # type: ignore
+    media_file_paths: list[Path] = []
     for lib_idx in range(LIB_COUNT):
         media_lib_path = Path(LIBS_MEDIA_PATH[lib_idx])
         media_file_paths.extend(get_media_file_paths(media_lib_path))
-    metafunc.parametrize("media_file_path", media_file_paths) # type: ignore
+    metafunc.parametrize("media_file_path", media_file_paths)  # type: ignore
 
 
 def test_media_file_filename(media_file_path: Path):

@@ -3,13 +3,12 @@ from pathlib import Path
 
 from mediascan.utils.path.album_path import AlbumPathBuilder
 
+from mediatest.config import EXTS_MEDIA, LIB_COUNT, LIBS_MEDIA_PATH
 from mediatest.path_utils import get_path_depth, is_dir_with_files
 
-from tests.test_config import *
 
-
-def get_album_dir_paths(media_lib_path: Path) -> List[Path]:
-    ret : set[Path] = set()
+def get_album_dir_paths(media_lib_path: Path) -> list[Path]:
+    ret: set[Path] = set()
     base_depth = get_path_depth(media_lib_path)
     for root, dirs, _ in os.walk(media_lib_path, topdown=False):
         for name in dirs:
@@ -25,12 +24,12 @@ def get_album_dir_paths(media_lib_path: Path) -> List[Path]:
     return list(ret)
 
 
-def pytest_generate_tests(metafunc): # type: ignore
-    album_dir_paths : List[Path] = []
+def pytest_generate_tests(metafunc):  # type: ignore
+    album_dir_paths: list[Path] = []
     for lib_idx in range(LIB_COUNT):
         media_lib_path = Path(LIBS_MEDIA_PATH[lib_idx])
         album_dir_paths.extend(get_album_dir_paths(media_lib_path))
-    metafunc.parametrize("album_path", album_dir_paths) # type: ignore
+    metafunc.parametrize("album_path", album_dir_paths)  # type: ignore
 
 
 def assert_is_dir_with_media_files(path: Path):
@@ -40,9 +39,9 @@ def assert_is_dir_with_media_files(path: Path):
 
 
 def test_album_dir_name(album_path: Path):
-    """Verifies that album directory name doesn't break any naming rules 
+    """Verifies that album directory name doesn't break any naming rules
     e.g. no '.' characters"""
-    assert '.' not in album_path.name
+    assert "." not in album_path.name
     album_path_obj = AlbumPathBuilder.of(album_path)
     assert album_path_obj.valid
 

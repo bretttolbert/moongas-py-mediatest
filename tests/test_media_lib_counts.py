@@ -1,18 +1,27 @@
 import os
 from dataclasses import dataclass
 from pathlib import Path
+import pytest
 
-from tests.test_config import *
+from mediatest.config import (
+    EXTS_MEDIA,
+    LIB_COUNT,
+    LIBS_EXPECTED_FILESIZE_GB,
+    LIBS_EXPECTED_LRC_COUNT,
+    LIBS_EXPECTED_MEDIA_COUNT,
+    LIBS_MEDIA_PATH,
+    LIBS_TOTAL_FILESIZE_LIMIT_GB,
+)
+from mediatest.path_utils import get_dir_path_filesize_gb, get_file_ext
 
-from mediatest.path_utils import get_file_ext, get_dir_path_filesize_gb
 
 @dataclass
 class MediaFileCounts:
     media: int = 0
     mp3: int = 0
     m4a: int = 0
-    lrc: int = 0 # synced lyrics
-    txt: int = 0 # unsynced lyrics
+    lrc: int = 0  # synced lyrics
+    txt: int = 0  # unsynced lyrics
 
 
 def get_media_file_counts(media_lib_path: Path | str) -> MediaFileCounts:
@@ -39,14 +48,14 @@ def get_media_file_counts(media_lib_path: Path | str) -> MediaFileCounts:
     return counts
 
 
-def pytest_generate_tests(metafunc): # type: ignore
-    media_counts_expected : List[int] = []
-    media_counts_actual : List[int] = []
-    lrc_counts_expected : List[int] = []
-    lrc_counts_actual : List[int] = []
-    file_size_limit : List[int] = []
-    file_size_expected : List[int] = []
-    file_size_actual : List[float] = []
+def pytest_generate_tests(metafunc: pytest.Metafunc):
+    media_counts_expected: list[int] = []
+    media_counts_actual: list[int] = []
+    lrc_counts_expected: list[int] = []
+    lrc_counts_actual: list[int] = []
+    file_size_limit: list[int] = []
+    file_size_expected: list[int] = []
+    file_size_actual: list[float] = []
     for lib_idx in range(LIB_COUNT):
         media_lib_path = Path(LIBS_MEDIA_PATH[lib_idx])
         counts = get_media_file_counts(media_lib_path)
@@ -64,17 +73,19 @@ def pytest_generate_tests(metafunc): # type: ignore
         print(f"filesize={current_lib_file_size_actual}")
         file_size_actual.append(current_lib_file_size_actual)
 
-    if "media_count_expected" in metafunc.fixturenames and "media_count_actual" in metafunc.fixturenames: # type: ignore
-        metafunc.parametrize(["media_count_actual", "media_count_expected"], list(zip(media_counts_actual, media_counts_expected))) # type: ignore
+    if "media_count_expected" in metafunc.fixturenames and "media_count_actual" in metafunc.fixturenames:
+        metafunc.parametrize(
+            ["media_count_actual", "media_count_expected"], list(zip(media_counts_actual, media_counts_expected))
+        )
 
-    if "lrc_count_expected" in metafunc.fixturenames and "lrc_count_actual" in metafunc.fixturenames: # type: ignore
-        metafunc.parametrize(["lrc_count_actual", "lrc_count_expected"], list(zip(lrc_counts_actual, lrc_counts_expected))) # type: ignore
+    if "lrc_count_expected" in metafunc.fixturenames and "lrc_count_actual" in metafunc.fixturenames:
+        metafunc.parametrize(["lrc_count_actual", "lrc_count_expected"], list(zip(lrc_counts_actual, lrc_counts_expected)))
 
-    if "file_size_expected" in metafunc.fixturenames and "file_size_actual" in metafunc.fixturenames: # type: ignore
-        metafunc.parametrize(["file_size_actual", "file_size_expected"], list(zip(file_size_actual, file_size_expected))) # type: ignore
+    if "file_size_expected" in metafunc.fixturenames and "file_size_actual" in metafunc.fixturenames:
+        metafunc.parametrize(["file_size_actual", "file_size_expected"], list(zip(file_size_actual, file_size_expected)))
 
-    if "file_size_limit" in metafunc.fixturenames and "file_size_actual" in metafunc.fixturenames: # type: ignore
-        metafunc.parametrize(["file_size_actual", "file_size_limit"], list(zip(file_size_actual, file_size_limit))) # type: ignore
+    if "file_size_limit" in metafunc.fixturenames and "file_size_actual" in metafunc.fixturenames:
+        metafunc.parametrize(["file_size_actual", "file_size_limit"], list(zip(file_size_actual, file_size_limit)))
 
 
 def test_media_count(media_count_actual: int, media_count_expected: int):
