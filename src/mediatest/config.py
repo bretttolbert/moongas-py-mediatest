@@ -48,23 +48,32 @@ class MediaTestConfigUtil:
         return config
 
 
-CONFIG = MediaTestConfigUtil().load_config()
+def configure(path: Path | None = None) -> None:
+    global CONFIG
+    global MEDIASCAN_FILES_PATH, MINIMUM_FILESIZE
+    global EXTS_MEDIA, EXTS_ART, EXTS_LYRICS, EXTS_METADATA, EXTS_EXTRA, ALLOWED_EXTS
+    global LIB_GENRES_MODE_BLACKLIST, LIB_COUNT, LIBS_MEDIA_PATH
+    global LIBS_EXPECTED_MEDIA_COUNT, LIBS_EXPECTED_LRC_COUNT
+    global LIBS_TOTAL_FILESIZE_LIMIT_GB, LIBS_EXPECTED_FILESIZE_GB, LIBS_GENRES
 
-MEDIASCAN_FILES_PATH = CONFIG.mediascan_files_path
+    CONFIG = MediaTestConfigUtil().load_config(path)
+    MEDIASCAN_FILES_PATH = CONFIG.mediascan_files_path
+    MINIMUM_FILESIZE = CONFIG.minimum_filesize
+    EXTS_MEDIA = CONFIG.exts_media
+    EXTS_ART = CONFIG.exts_art
+    EXTS_LYRICS = CONFIG.exts_lyrics
+    EXTS_METADATA = CONFIG.exts_metadata
+    EXTS_EXTRA = CONFIG.exts_extra
+    ALLOWED_EXTS = EXTS_MEDIA + EXTS_ART + EXTS_LYRICS + EXTS_METADATA + EXTS_EXTRA
+    LIB_GENRES_MODE_BLACKLIST = CONFIG.lib_genres_mode_blacklist
+    LIB_COUNT = len(CONFIG.libs)
+    LIBS_MEDIA_PATH = [lib.media_path for lib in CONFIG.libs]
+    LIBS_EXPECTED_MEDIA_COUNT = [lib.expected_media_count for lib in CONFIG.libs]
+    LIBS_EXPECTED_LRC_COUNT = [lib.expected_lrc_count for lib in CONFIG.libs]
+    LIBS_TOTAL_FILESIZE_LIMIT_GB = [lib.total_filesize_limit_gb for lib in CONFIG.libs]
+    LIBS_EXPECTED_FILESIZE_GB = [lib.expected_filesize_gb for lib in CONFIG.libs]
+    LIBS_GENRES = [lib.genres for lib in CONFIG.libs]
+
+
 PRESENT_YEAR: int = datetime.now().year
-MINIMUM_FILESIZE = CONFIG.minimum_filesize
-EXTS_MEDIA = CONFIG.exts_media
-EXTS_ART = CONFIG.exts_art
-EXTS_LYRICS = CONFIG.exts_lyrics
-EXTS_METADATA = CONFIG.exts_metadata
-EXTS_EXTRA = CONFIG.exts_extra
-ALLOWED_EXTS = EXTS_MEDIA + EXTS_ART + EXTS_LYRICS + EXTS_METADATA + EXTS_EXTRA
-
-LIB_GENRES_MODE_BLACKLIST = CONFIG.lib_genres_mode_blacklist
-LIB_COUNT = len(CONFIG.libs)
-LIBS_MEDIA_PATH = [lib.media_path for lib in CONFIG.libs]
-LIBS_EXPECTED_MEDIA_COUNT = [lib.expected_media_count for lib in CONFIG.libs]
-LIBS_EXPECTED_LRC_COUNT = [lib.expected_lrc_count for lib in CONFIG.libs]
-LIBS_TOTAL_FILESIZE_LIMIT_GB = [lib.total_filesize_limit_gb for lib in CONFIG.libs]
-LIBS_EXPECTED_FILESIZE_GB = [lib.expected_filesize_gb for lib in CONFIG.libs]
-LIBS_GENRES = [lib.genres for lib in CONFIG.libs]
+configure()
