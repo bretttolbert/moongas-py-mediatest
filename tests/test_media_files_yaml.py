@@ -1,8 +1,11 @@
-import pytest
-from typing import Dict, List, Optional, Set
 from pathlib import Path
+from typing import Dict, List, Optional, Set
 
-from mediascan import load_files_yaml, Genre, MediaFiles, MediaFile # type: ignore
+import pytest
+from mediascan.genres import Genre
+from mediascan.mediafile import MediaFile
+from mediascan.mediafiles import MediaFiles
+from mediascan.mediafiles_loader import load_files_yaml
 
 from tests.test_config import *
 
@@ -20,7 +23,7 @@ def run_tests() -> List[str]:
     return errors
 
 
-def pytest_generate_tests(metafunc): # type: ignore
+def pytest_generate_tests(metafunc):  # type: ignore
     """Indirect parametrization for pytest to run
     test_per_error for each error found.
     parametrizes with a list of errors or [NO_ERRORS]
@@ -29,11 +32,11 @@ def pytest_generate_tests(metafunc): # type: ignore
     at least one test to run and pass,
     otherwise the test would just be greyed out)
     """
-    if "error" in metafunc.fixturenames: # type: ignore
+    if "error" in metafunc.fixturenames:  # type: ignore
         errors = run_tests()
         if len(errors) == 0:
             errors.append(NO_ERRORS)
-        metafunc.parametrize("error", errors) # type: ignore
+        metafunc.parametrize("error", errors)  # type: ignore
 
 
 def test_per_error(error: str):
@@ -97,7 +100,7 @@ def test_lib_genres_no_intersections():
             return
         intersection = set(LIBS_GENRES[idx]) & set(LIBS_GENRES[idx + 1])
         if len(intersection):
-            pytest.exit(f"Duplicate genres in both LIB{idx+1} and LIB{idx+2}: {str(intersection)}")
+            pytest.exit(f"Duplicate genres in both LIB{idx + 1} and LIB{idx + 2}: {str(intersection)}")
 
 
 def test_lib_genres_all_genres_used():
@@ -118,9 +121,9 @@ def test_mediafile_libs_genres_mode_whitelist(file: MediaFile):
     for idx in range(LIB_COUNT):
         if file.path.find(LIBS_MEDIA_PATH[idx]) != -1:
             g = genre_string_to_enum(file.genre)
-            assert (
-                g is not None and g in LIBS_GENRES[idx]
-            ), f"{file.path} (genre: {file.genre}) is not allowed by by LIB{idx+1} LIBS_GENRES"
+            assert g is not None and g in LIBS_GENRES[idx], (
+                f"{file.path} (genre: {file.genre}) is not allowed by by LIB{idx + 1} LIBS_GENRES"
+            )
 
 
 @pytest.mark.parametrize("file", files.files)
@@ -130,9 +133,9 @@ def test_mediafile_libs_genres_mode_blacklist(file: MediaFile):
     for idx in range(LIB_COUNT):
         if file.path.find(LIBS_MEDIA_PATH[idx]) != -1:
             g = genre_string_to_enum(file.genre)
-            assert (
-                g is not None and g not in LIBS_GENRES[idx]
-            ), f"{file.path} (genre: {file.genre}) is prohibited by LIB{idx+1} LIBS_GENRES"
+            assert g is not None and g not in LIBS_GENRES[idx], (
+                f"{file.path} (genre: {file.genre}) is prohibited by LIB{idx + 1} LIBS_GENRES"
+            )
 
 
 @pytest.mark.parametrize("file", files.files)
@@ -178,7 +181,9 @@ def test_mediafile_albumartist_matches_artist_directory_name():
         artist_dir_name = str(Path(file.path).parent.parent.name)
         albumartist_escaped = escape_artist_name(file.albumartist)
         if artist_dir_name in artists:
-            assert artists[artist_dir_name] == albumartist_escaped, f"File (path={file.path}) albumartist '{file.albumartist}' (escaped={albumartist_escaped})  does not match artist directory name '{artist_dir_name}'"
+            assert artists[artist_dir_name] == albumartist_escaped, (
+                f"File (path={file.path}) albumartist '{file.albumartist}' (escaped={albumartist_escaped})  does not match artist directory name '{artist_dir_name}'"
+            )
         else:
             artists[artist_dir_name] = albumartist_escaped
 

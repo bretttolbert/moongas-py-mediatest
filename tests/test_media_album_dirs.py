@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-from mediascan import AlbumPathBuilder # type: ignore
+from mediascan.utils.path.album_path import AlbumPathBuilder
 
 from mediatest.path_utils import get_path_depth, is_dir_with_files
 

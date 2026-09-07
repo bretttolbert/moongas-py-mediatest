@@ -1,1 +1,5 @@
-from . import path_utils
+import pytest
+
+
+def main() -> int:
+    return pytest.main()
