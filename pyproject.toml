@@ -58,9 +58,6 @@ Repository = "https://github.com/bretttolbert/moongas-py-mediatest.git"
 "Bug Tracker" = "https://github.com/bretttolbert/moongas-py-mediatest/issues"
 Changelog = "https://github.com/bretttolbert/moongas-py-mediatest/blob/master/CHANGELOG.md"
 
-[project.scripts]
-mediatest = "mediatest:main"
-
 [tool.setuptools.package-data]
 mediatest = [ 'py.typed']
 
