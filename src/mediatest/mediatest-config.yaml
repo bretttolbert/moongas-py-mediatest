@@ -16,23 +16,13 @@ extsMetadata:
 extsExtra:
   - pdf
 libGenresModeBlacklist: false
-libsMediaPath:
-  - /data/Music/
-  - /data/MusicOther/
-libsExpectedMediaCount:
-  - 21666
-  - 0
-libsExpectedLrcCount:
-  - 11547
-  - 0
-libsTotalFilesizeLimitGb:
-  - 200
-  - 1
-libsExpectedFilesizeGb:
-  - 167
-  - 0
-libsGenres:
-  -
+libs:
+  - mediaPath: /data/Music/
+    expectedMediaCount: 21666
+    expectedLrcCount: 11547
+    totalFilesizeLimitGb: 200
+    expectedFilesizeGb: 167
+    genres:
     - Acid Punk
     - Acid Rock
     - Afrobeat
@@ -213,4 +203,9 @@ libsGenres:
     - World
     - Zamrock
     - Zydeco
-  - []
+  - mediaPath: /data/MusicOther/
+    expectedMediaCount: 0
+    expectedLrcCount: 0
+    totalFilesizeLimitGb: 1
+    expectedFilesizeGb: 0
+    genres: []

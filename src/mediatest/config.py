@@ -7,6 +7,16 @@ from mediascan.genres import Genre
 
 
 @dataclass
+class MediaTestLibConfig(YAMLWizard):
+    media_path: str
+    expected_media_count: int
+    expected_lrc_count: int
+    total_filesize_limit_gb: int
+    expected_filesize_gb: int
+    genres: list[Genre]
+
+
+@dataclass
 class MediaTestConfig(YAMLWizard):
     mediascan_files_path: str
     minimum_filesize: int
@@ -16,12 +26,7 @@ class MediaTestConfig(YAMLWizard):
     exts_metadata: list[str]
     exts_extra: list[str]
     lib_genres_mode_blacklist: bool
-    libs_media_path: list[str]
-    libs_expected_media_count: list[int]
-    libs_expected_lrc_count: list[int]
-    libs_total_filesize_limit_gb: list[int]
-    libs_expected_filesize_gb: list[int]
-    libs_genres: list[list[Genre]]
+    libs: list[MediaTestLibConfig]
 
 
 class MediaTestConfigUtil:
@@ -51,10 +56,10 @@ EXTS_EXTRA = CONFIG.exts_extra
 ALLOWED_EXTS = EXTS_MEDIA + EXTS_ART + EXTS_LYRICS + EXTS_METADATA + EXTS_EXTRA
 
 LIB_GENRES_MODE_BLACKLIST = CONFIG.lib_genres_mode_blacklist
-LIB_COUNT = len(CONFIG.libs_media_path)
-LIBS_MEDIA_PATH = CONFIG.libs_media_path
-LIBS_EXPECTED_MEDIA_COUNT = CONFIG.libs_expected_media_count
-LIBS_EXPECTED_LRC_COUNT = CONFIG.libs_expected_lrc_count
-LIBS_TOTAL_FILESIZE_LIMIT_GB = CONFIG.libs_total_filesize_limit_gb
-LIBS_EXPECTED_FILESIZE_GB = CONFIG.libs_expected_filesize_gb
-LIBS_GENRES = CONFIG.libs_genres
+LIB_COUNT = len(CONFIG.libs)
+LIBS_MEDIA_PATH = [lib.media_path for lib in CONFIG.libs]
+LIBS_EXPECTED_MEDIA_COUNT = [lib.expected_media_count for lib in CONFIG.libs]
+LIBS_EXPECTED_LRC_COUNT = [lib.expected_lrc_count for lib in CONFIG.libs]
+LIBS_TOTAL_FILESIZE_LIMIT_GB = [lib.total_filesize_limit_gb for lib in CONFIG.libs]
+LIBS_EXPECTED_FILESIZE_GB = [lib.expected_filesize_gb for lib in CONFIG.libs]
+LIBS_GENRES = [lib.genres for lib in CONFIG.libs]
