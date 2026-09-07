@@ -207,6 +207,7 @@ LIBS_GENRES: list[list[Genre]] = [
         Genre.Soundtrack,
         Genre.SouthernPunkRock,
         Genre.SouthernRock,
+        Genre.SpaceAgePop,
         Genre.SpeechSample,
         Genre.StonerRock,
         Genre.SufiRock,

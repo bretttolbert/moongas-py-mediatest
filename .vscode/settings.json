@@ -1,6 +1,6 @@
 {
     "[python]": {
-        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.defaultFormatter": null,
         "editor.formatOnSave": false,
         "editor.codeActionsOnSave": {
             "source.fixAll.ruff": "explicit",
@@ -46,7 +46,7 @@
     "python.testing.autoTestDiscoverOnSaveEnabled": true,
     "python.testing.pytestPath": "pytest",
     "python.testing.cwd": "${workspaceFolder}",
-    "python.analysis.diagnosticMode": "openFilesOnly",
+    "python.analysis.diagnosticMode": "workspace",
     "python.analysis.stubPath": "typings",
     "python.analysis.exclude": [
         ".venv.314",

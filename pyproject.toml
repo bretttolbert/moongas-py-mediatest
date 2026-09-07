@@ -41,7 +41,7 @@ classifiers = [
 ]
 dependencies = [
   "dataclass-wizard[yaml]>0.39.1", 
-  "mediascan>=1.2.0",
+  "mediascan @ git+https://github.com/bretttolbert/moongas-py-mediascan.git",
   "pytest>=9.1.1", 
   "pyaml>=26.7.0", 
 ]

@@ -119,7 +119,7 @@ def test_lib_genres_all_genres_used():
                 found = True
                 break
         if not found:
-            pytest.exit("Genre not in any lib genres: " + genre)
+            pytest.exit(f"Genre '{genre}' not in any lib genres whitelist. Did you forget to add it to test config?")
 
 
 @pytest.mark.parametrize("file", files.files)
