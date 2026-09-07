@@ -1,7 +1,7 @@
 from typing import List
 from datetime import datetime
 
-from mediascan import Genre
+from mediascan.genres import Genre
 
 from mediatest.path_utils import KILOBYTE
 
@@ -9,7 +9,7 @@ from mediatest.path_utils import KILOBYTE
 # For running tests on the yaml file output by mediascan
 # E.g. for ID3-tag tests
 # E.g. testing if year is a valid year or something weird like 0
-MEDIASCAN_FILES_PATH = "../mediascan/out/files.yaml"
+MEDIASCAN_FILES_PATH = "../mediascan-files.yaml"
 
 
 PRESENT_YEAR: int = datetime.now().year

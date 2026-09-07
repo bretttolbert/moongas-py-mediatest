@@ -11,7 +11,7 @@
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
     "python.testing.pytestArgs": ["-vv"],
-    "python.defaultInterpreterPath": "/home/brett/Git/bretttolbert/mediax/mediatest/env/bin/python",
+    "python.defaultInterpreterPath": "${workspaceFolder}/moongas-py-mediatest/.env/bin/python",
     "files.exclude": {
         "**/.git": true,
         "**/.svn": true,
@@ -30,5 +30,6 @@
         "**/.git": true,
         "**/build": true
     },
-    "python-envs.pythonProjects": []
+    "python-envs.pythonProjects": [],
+    "python.terminal.useEnvFile": true
 }
