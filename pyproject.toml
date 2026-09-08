@@ -62,7 +62,7 @@ Changelog = "https://github.com/bretttolbert/moongas-py-mediatest/blob/master/CH
 mediatest = [ 'py.typed']
 
 [tool.setuptools.data-files]
-"." = ["mediatest-config.yaml"]
+"." = ["mediatest-config.yml"]
 
 [tool.setuptools.packages.find]
 where = ["src", "."]

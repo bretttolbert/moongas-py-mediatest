@@ -13,4 +13,9 @@ def main(config_path: Path | None = None) -> int:
         config_path = parser.parse_args().config_path
 
     configure(config_path)
-    return pytest.main(["tests/mediatests"])
+    if config_path is not None:
+        test_root = config_path.resolve().parent
+    else:
+        test_root = Path(__file__).resolve().parents[2]
+    test_path = test_root / "tests" / "mediatests"
+    return pytest.main([str(test_path), "--rootdir", str(test_root)])

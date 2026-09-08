@@ -1,4 +1,4 @@
-mediascanFilesPath: ../mediascan-files.yaml
+mediascanFilesPath: ../mediascan-files.yml
 minimumFilesize: 10000
 extsMedia:
   - mp3

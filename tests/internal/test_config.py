@@ -5,7 +5,7 @@ from mediatest.config import MediaTestConfigUtil
 
 
 def test_load_config_from_path(tmp_path: Path):
-    source_config_path = Path(__file__).resolve().parents[2] / "mediatest-config.yaml"
+    source_config_path = Path(__file__).resolve().parents[2] / "mediatest-config.yml"
     config_directory = tmp_path / "config"
     config_directory.mkdir()
     config_path = config_directory / source_config_path.name

@@ -34,7 +34,7 @@ class MediaTestConfig(YAMLWizard):
 class MediaTestConfigUtil:
     """Utility class for loading mediatest configuration from YAML."""
 
-    yaml_filename = "mediatest-config.yaml"
+    yaml_filename = "mediatest-config.yml"
 
     def load_config(self, path: Path | None = None) -> MediaTestConfig:
         if path is not None:
