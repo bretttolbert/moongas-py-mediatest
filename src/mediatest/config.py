@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
+import os
 from pathlib import Path
 import sys
 
@@ -38,6 +39,8 @@ class MediaTestConfigUtil:
     def load_config(self, path: Path | None = None) -> MediaTestConfig:
         if path is not None:
             config_path = path
+            if not config_path.exists():
+                raise Exception(f"The provided mediatest config file path does not exist: path={path} cwd={os.getcwd()}")
         else:
             source_config_path = Path(__file__).resolve().parents[2] / self.yaml_filename
             config_path = source_config_path if source_config_path.exists() else Path(sys.prefix) / self.yaml_filename
