@@ -39,6 +39,14 @@ Only run filesystem tests (and not the slower files.yaml tests):
 pytest -k filesystem
 ```
 
+## Developer Usage
+
+Only run internal unit-tests and not media library tests:
+
+```bash
+pytest --ignore tests/media
+```
+
 ## Depedencies
 - [mediascan](https://github.com/bretttolbert/mediascan) (Required for ID3 tag tests) - A simple and fast Go (golang) command-line utility to recursively scan a directory for media files, extract metadata (including ID3v2 tags from both MP3 and M4A files), and save the output in a simple YAML format (e.g. [files.yaml](https://github.com/bretttolbert/mediascan/blob/main/out/files.yaml), and a Python library with data classes for working with the YAML files output by `mediascan.go`.
 
