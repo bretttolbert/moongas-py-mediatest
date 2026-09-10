@@ -4,7 +4,18 @@ from pathlib import Path
 
 import pytest
 
+from mediatest import config as config_module
 from mediatest.config import MediaTestConfigUtil
+
+
+def test_main_uses_live_config_state_after_configure():
+    import mediatest.main as main_module
+
+    source_config_path = Path(__file__).resolve().parents[2] / "mediatest-config.yml"
+    config_module.configure(source_config_path)
+
+    assert main_module.config.MEDIATEST_ROOTDIR == config_module.CONFIG.mediatest_rootdir
+    assert main_module.config.MEDIATEST_ROOTDIR == config_module.MEDIATEST_ROOTDIR
 
 
 def test_load_config_logs_config_source(caplog: pytest.LogCaptureFixture, tmp_path: Path):

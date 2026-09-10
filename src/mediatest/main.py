@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from mediatest.config import configure, MEDIATEST_ROOTDIR
+from mediatest import config
 
 logger = logging.getLogger(__name__)
 
@@ -57,14 +57,14 @@ def main() -> int:
 
     with open(config_path, "r") as file:
         content = file.read()
-        logger.info(r"\nBEGIN_CONFIGURATION\n" + content + r"\nEND_CONFIGURATION\n")
+        logger.info(r"\nBEGIN_MEDIATEST_CONFIGURATION\n" + content + r"\nEND_MEDIATEST_CONFIGURATION\n")
 
     logger.debug("Calling configure(%s)", config_path)
-    configure(config_path)
+    config.configure(config_path)
     logger.info("configure(%s) completed successfully", config_path)
 
-    if MEDIATEST_ROOTDIR:
-        rootdir = Path(MEDIATEST_ROOTDIR)
+    if config.MEDIATEST_ROOTDIR:
+        rootdir = Path(config.MEDIATEST_ROOTDIR)
         logger.debug("Resolved mediatest_rootdir from config path: %s", rootdir)
     else:
         rootdir = config_path.resolve().parent
