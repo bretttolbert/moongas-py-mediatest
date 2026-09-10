@@ -57,7 +57,7 @@ def main() -> int:
 
     with open(config_path, "r") as file:
         content = file.read()
-        logger.info(content)
+        logger.info(r"\nBEGIN_CONFIGURATION\n" + content + r"\nEND_CONFIGURATION\n")
 
     logger.debug("Calling configure(%s)", config_path)
     configure(config_path)
