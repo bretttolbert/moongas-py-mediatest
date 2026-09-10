@@ -70,4 +70,4 @@ Of course you can adjust the rules as desired my modifying the Python.
 
 ## Genres
 
-This library utilizes the comprehensive [`Genre` enum provided by `mediascan`](https://github.com/bretttolbert/mediascan/blob/main/python/mediascan/src/genres.py) with string values corresponding to the expected ID3 tag values. This helps avoid inconsistencies e.g. _"Post-punk"_ vs. _"Post-Punk"_ vs. _"Post punk"_ vs. _"Post Punk"_.
+This library utilizes the comprehensive [`Genre` enum provided by the Moongas `mediascan` Python package](https://github.com/bretttolbert/moongas-py-mediascan/blob/main/src/mediascan/genres.py) with string values corresponding to the expected ID3 tag values. This helps avoid inconsistencies e.g. _"Post-punk"_ vs. _"Post-Punk"_ vs. _"Post punk"_ vs. _"Post Punk"_.
