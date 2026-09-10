@@ -1,4 +1,4 @@
-mediatestRootDir: .
+mediatestRootdir: .
 mediascanFilesYamlPath: ../mediascan-files.yml
 minimumFilesize: 10000
 extsMedia:
