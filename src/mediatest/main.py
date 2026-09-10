@@ -52,7 +52,7 @@ def main() -> int:
         logger.error("Config path is not a file: %s", config_path)
         parser.error(f"Config path is not a file: {config_path}")
 
-    hash = file_hash_sha256(config_path)
+    hash = file_hash_sha256(config_path).hexdigest()
     logger.info(f"Loading config from \"{config_path}\" sha256:{hash}")
 
     logger.debug("Calling configure(%s)", config_path)
