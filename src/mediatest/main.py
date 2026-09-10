@@ -1,4 +1,5 @@
 import argparse
+import hashlib
 import logging
 import sys
 from pathlib import Path
@@ -9,6 +10,10 @@ from mediatest.config import configure, MEDIATEST_ROOTDIR
 
 logger = logging.getLogger(__name__)
 
+
+def file_hash_sha256(file_path: Path):
+    with open(file_path, "rb") as f:
+        return hashlib.file_digest(f, "sha256")
 
 def main() -> int:
     logging.basicConfig(
@@ -46,6 +51,9 @@ def main() -> int:
     if not config_path.is_file():
         logger.error("Config path is not a file: %s", config_path)
         parser.error(f"Config path is not a file: {config_path}")
+
+    hash = file_hash_sha256(config_path)
+    logger.info(f"Loading config from \"{config_path}\" sha256:{hash}")
 
     logger.debug("Calling configure(%s)", config_path)
     configure(config_path)
