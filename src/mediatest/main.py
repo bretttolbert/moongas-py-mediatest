@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from mediatest.config import configure
+from mediatest.config import configure, MEDIATEST_ROOTDIR
 
 logger = logging.getLogger(__name__)
 
@@ -51,17 +51,22 @@ def main() -> int:
     configure(config_path)
     logger.info("configure(%s) completed successfully", config_path)
 
-    test_root = config_path.resolve().parent
-    logger.debug("Resolved test_root from config file path: %s", test_root)
-    logger.debug("test_root exists = %s", test_root.exists())
-    logger.debug("test_root is_dir = %s", test_root.is_dir())
+    if MEDIATEST_ROOTDIR:
+        rootdir = Path(MEDIATEST_ROOTDIR)
+        logger.debug("Resolved mediatest_rootdir from config path: %s", rootdir)
+    else:
+        rootdir = config_path.resolve().parent
+        logger.debug("No config path provided for mediatest_rootdir, defaulting to: %s", rootdir)
+    
+    logger.debug("mediatest_rootdir exists = %s", rootdir.exists())
+    logger.debug("mediatest_rootdir is_dir = %s", rootdir.is_dir())
 
-    test_path = test_root / "tests" / "mediatests"
+    test_path = rootdir / "tests" / "mediatests"
     logger.debug("Computed test_path=%s", test_path)
     logger.debug("test_path exists = %s", test_path.exists())
     logger.debug("test_path is_dir = %s", test_path.is_dir())
 
-    pytest_args = [str(test_path), "--rootdir", str(test_root)]
+    pytest_args = [str(test_path), "--rootdir", str(rootdir)]
     logger.info("Executing pytest with args: %s", pytest_args)
     result = pytest.main(pytest_args)
     logger.info("pytest.main() returned %s", result)

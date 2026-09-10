@@ -12,12 +12,12 @@ from mediatest.config import (
     LIB_GENRES_MODE_BLACKLIST,
     LIBS_GENRES,
     LIBS_MEDIA_PATH,
-    MEDIASCAN_FILES_PATH,
+    MEDIASCAN_FILES_YAML_PATH,
     MINIMUM_FILESIZE,
     PRESENT_YEAR,
 )
 
-files = load_files_yaml(MEDIASCAN_FILES_PATH)
+files = load_files_yaml(MEDIASCAN_FILES_YAML_PATH)
 
 
 NO_ERRORS = "(no errors)"

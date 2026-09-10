@@ -20,7 +20,8 @@ class MediaTestLibConfig(YAMLWizard):
 
 @dataclass
 class MediaTestConfig(YAMLWizard):
-    mediascan_files_path: str
+    mediatest_rootdir: str | None
+    mediascan_files_yaml_path: str
     minimum_filesize: int
     exts_media: list[str]
     exts_art: list[str]
@@ -53,14 +54,17 @@ class MediaTestConfigUtil:
 
 def configure(path: Path | None = None) -> None:
     global CONFIG
-    global MEDIASCAN_FILES_PATH, MINIMUM_FILESIZE
+    global MEDIATEST_ROOTDIR
+    global MEDIASCAN_FILES_YAML_PATH
     global EXTS_MEDIA, EXTS_ART, EXTS_LYRICS, EXTS_METADATA, EXTS_EXTRA, ALLOWED_EXTS
+    global MINIMUM_FILESIZE
     global LIB_GENRES_MODE_BLACKLIST, LIB_COUNT, LIBS_MEDIA_PATH
     global LIBS_EXPECTED_MEDIA_COUNT, LIBS_EXPECTED_LRC_COUNT
     global LIBS_TOTAL_FILESIZE_LIMIT_GB, LIBS_EXPECTED_FILESIZE_GB, LIBS_GENRES
 
     CONFIG = MediaTestConfigUtil().load_config(path)
-    MEDIASCAN_FILES_PATH = CONFIG.mediascan_files_path
+    MEDIATEST_ROOTDIR = CONFIG.mediatest_rootdir
+    MEDIASCAN_FILES_YAML_PATH = CONFIG.mediascan_files_yaml_path
     MINIMUM_FILESIZE = CONFIG.minimum_filesize
     EXTS_MEDIA = CONFIG.exts_media
     EXTS_ART = CONFIG.exts_art
