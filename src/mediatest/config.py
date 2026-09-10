@@ -3,6 +3,7 @@ from datetime import datetime
 import os
 from pathlib import Path
 import sys
+from typing import Optional
 
 from dataclass_wizard.v0 import YAMLWizard
 from mediascan.genres import Genre
@@ -20,7 +21,6 @@ class MediaTestLibConfig(YAMLWizard):
 
 @dataclass
 class MediaTestConfig(YAMLWizard):
-    mediatest_rootdir: str | None
     mediascan_files_yaml_path: str
     minimum_filesize: int
     exts_media: list[str]
@@ -30,6 +30,8 @@ class MediaTestConfig(YAMLWizard):
     exts_extra: list[str]
     lib_genres_mode_blacklist: bool
     libs: list[MediaTestLibConfig]
+
+    mediatest_rootdir: Optional[str] = None
 
 
 class MediaTestConfigUtil:
