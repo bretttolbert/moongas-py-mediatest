@@ -15,6 +15,7 @@ def file_hash_sha256(file_path: Path):
     with open(file_path, "rb") as f:
         return hashlib.file_digest(f, "sha256")
 
+
 def main() -> int:
     logging.basicConfig(
         level=logging.DEBUG,
@@ -37,8 +38,12 @@ def main() -> int:
     config_path = args.config_path
     logger.info("Received CLI config path: %s", config_path)
     logger.debug("config_path raw value: %r", config_path)
-    logger.debug("config_path absolute form before exists check: %s", config_path.absolute())
-    logger.debug("config_path resolved form before exists check: %s", config_path.resolve())
+    logger.debug(
+        "config_path absolute form before exists check: %s", config_path.absolute()
+    )
+    logger.debug(
+        "config_path resolved form before exists check: %s", config_path.resolve()
+    )
 
     logger.debug("Checking whether config file exists at %s", config_path)
     logger.debug("os.path.exists(%s) = %s", config_path, config_path.exists())
@@ -53,11 +58,15 @@ def main() -> int:
         parser.error(f"Config path is not a file: {config_path}")
 
     hash = file_hash_sha256(config_path).hexdigest()
-    logger.info(f"Loading config from \"{config_path}\" sha256:{hash} content:")
+    logger.info(f'Loading config from "{config_path}" sha256:{hash} content:')
 
     with open(config_path, "r") as file:
         content = file.read()
-        logger.info(r"\nBEGIN_MEDIATEST_CONFIGURATION\n" + content + r"\nEND_MEDIATEST_CONFIGURATION\n")
+        logger.info(
+            "\n---BEGIN_MEDIATEST_CONFIGURATION---\n"
+            + content
+            + "\n---END_MEDIATEST_CONFIGURATION---\n"
+        )
 
     logger.debug("Calling configure(%s)", config_path)
     config.configure(config_path)
@@ -68,8 +77,10 @@ def main() -> int:
         logger.debug("Resolved mediatest_rootdir from config path: %s", rootdir)
     else:
         rootdir = config_path.resolve().parent
-        logger.debug("No config path provided for mediatest_rootdir, defaulting to: %s", rootdir)
-    
+        logger.debug(
+            "No config path provided for mediatest_rootdir, defaulting to: %s", rootdir
+        )
+
     logger.debug("mediatest_rootdir exists = %s", rootdir.exists())
     logger.debug("mediatest_rootdir is_dir = %s", rootdir.is_dir())
 

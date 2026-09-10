@@ -46,27 +46,41 @@ class MediaTestConfigUtil:
         logger.debug("load_config() called with path=%s, cwd=%s", path, os.getcwd())
         if path is not None:
             config_path = Path(path)
-            logger.debug("Attempting to load config from explicit path: %s", config_path)
+            logger.debug(
+                "Attempting to load config from explicit path: %s", config_path
+            )
             if not config_path.exists():
-                raise Exception(f"The provided mediatest config file path does not exist: path={path} cwd={os.getcwd()}")
+                raise Exception(
+                    f"The provided mediatest config file path does not exist: path={path} cwd={os.getcwd()}"
+                )
             logger.debug("Explicit config path exists: %s", config_path)
         else:
-            source_config_path = Path(__file__).resolve().parents[2] / self.yaml_filename
+            source_config_path = (
+                Path(__file__).resolve().parents[2] / self.yaml_filename
+            )
             fallback_config_path = Path(sys.prefix) / self.yaml_filename
             logger.debug(
                 "No explicit path provided; checking default config locations: source=%s fallback=%s",
                 source_config_path,
                 fallback_config_path,
             )
-            config_path = source_config_path if source_config_path.exists() else fallback_config_path
+            config_path = (
+                source_config_path
+                if source_config_path.exists()
+                else fallback_config_path
+            )
             logger.debug("Using default config path: %s", config_path)
 
         logger.debug("Opening config file for parsing: %s", config_path)
         with config_path.open("r", encoding="utf-8") as config_file:
-            config = MediaTestConfig.from_yaml(config_file)  # pyright: ignore[reportUnknownMemberType]
-
+            config = MediaTestConfig.from_yaml( # pyright: ignore[reportUnknownMemberType]
+                config_file
+            ) 
         if isinstance(config, list):
-            logger.debug("Parsed YAML returned a list with %d item(s); selecting first entry", len(config))
+            logger.debug(
+                "Parsed YAML returned a list with %d item(s); selecting first entry",
+                len(config),
+            )
             config = config[0]
 
         logger.info("Loaded config from %s", config_path)
@@ -123,7 +137,14 @@ def configure(path: Path | None = None) -> None:
         MEDIASCAN_FILES_YAML_PATH,
         MINIMUM_FILESIZE,
     )
-    logger.debug("Configured extensions: media=%s art=%s lyrics=%s metadata=%s extra=%s", EXTS_MEDIA, EXTS_ART, EXTS_LYRICS, EXTS_METADATA, EXTS_EXTRA)
+    logger.debug(
+        "Configured extensions: media=%s art=%s lyrics=%s metadata=%s extra=%s",
+        EXTS_MEDIA,
+        EXTS_ART,
+        EXTS_LYRICS,
+        EXTS_METADATA,
+        EXTS_EXTRA,
+    )
     logger.debug("Library media paths: %s", LIBS_MEDIA_PATH)
 
 
