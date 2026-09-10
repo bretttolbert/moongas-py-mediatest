@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
+import logging
 import os
 from pathlib import Path
 import sys
@@ -7,6 +8,8 @@ from typing import Optional
 
 from dataclass_wizard.v0 import YAMLWizard
 from mediascan.genres import Genre
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -40,17 +43,40 @@ class MediaTestConfigUtil:
     yaml_filename = "mediatest-config.yml"
 
     def load_config(self, path: Path | None = None) -> MediaTestConfig:
+        logger.debug("load_config() called with path=%s, cwd=%s", path, os.getcwd())
         if path is not None:
-            config_path = path
+            config_path = Path(path)
+            logger.debug("Attempting to load config from explicit path: %s", config_path)
             if not config_path.exists():
                 raise Exception(f"The provided mediatest config file path does not exist: path={path} cwd={os.getcwd()}")
+            logger.debug("Explicit config path exists: %s", config_path)
         else:
             source_config_path = Path(__file__).resolve().parents[2] / self.yaml_filename
-            config_path = source_config_path if source_config_path.exists() else Path(sys.prefix) / self.yaml_filename
+            fallback_config_path = Path(sys.prefix) / self.yaml_filename
+            logger.debug(
+                "No explicit path provided; checking default config locations: source=%s fallback=%s",
+                source_config_path,
+                fallback_config_path,
+            )
+            config_path = source_config_path if source_config_path.exists() else fallback_config_path
+            logger.debug("Using default config path: %s", config_path)
+
+        logger.debug("Opening config file for parsing: %s", config_path)
         with config_path.open("r", encoding="utf-8") as config_file:
             config = MediaTestConfig.from_yaml(config_file)  # pyright: ignore[reportUnknownMemberType]
+
         if isinstance(config, list):
-            return config[0]
+            logger.debug("Parsed YAML returned a list with %d item(s); selecting first entry", len(config))
+            config = config[0]
+
+        logger.info("Loaded config from %s", config_path)
+        logger.debug(
+            "Config summary: mediatest_rootdir=%s libs=%d mediascan_files_yaml_path=%s minimum_filesize=%s",
+            getattr(config, "mediatest_rootdir", None),
+            len(config.libs),
+            config.mediascan_files_yaml_path,
+            config.minimum_filesize,
+        )
         return config
 
 
@@ -64,7 +90,14 @@ def configure(path: Path | None = None) -> None:
     global LIBS_EXPECTED_MEDIA_COUNT, LIBS_EXPECTED_LRC_COUNT
     global LIBS_TOTAL_FILESIZE_LIMIT_GB, LIBS_EXPECTED_FILESIZE_GB, LIBS_GENRES
 
-    CONFIG = MediaTestConfigUtil().load_config(path)
+    logger.info("configure() starting; path=%s", path)
+    try:
+        CONFIG = MediaTestConfigUtil().load_config(path)
+    except Exception:
+        logger.exception("configure() failed while loading config from %s", path)
+        raise
+
+    logger.debug("Config object loaded; assigning global configuration values")
     MEDIATEST_ROOTDIR = CONFIG.mediatest_rootdir
     MEDIASCAN_FILES_YAML_PATH = CONFIG.mediascan_files_yaml_path
     MINIMUM_FILESIZE = CONFIG.minimum_filesize
@@ -82,6 +115,16 @@ def configure(path: Path | None = None) -> None:
     LIBS_TOTAL_FILESIZE_LIMIT_GB = [lib.total_filesize_limit_gb for lib in CONFIG.libs]
     LIBS_EXPECTED_FILESIZE_GB = [lib.expected_filesize_gb for lib in CONFIG.libs]
     LIBS_GENRES = [lib.genres for lib in CONFIG.libs]
+
+    logger.info(
+        "configure() completed for %d libraries; mediatest_rootdir=%s mediascan_files_yaml_path=%s minimum_filesize=%s",
+        LIB_COUNT,
+        MEDIATEST_ROOTDIR,
+        MEDIASCAN_FILES_YAML_PATH,
+        MINIMUM_FILESIZE,
+    )
+    logger.debug("Configured extensions: media=%s art=%s lyrics=%s metadata=%s extra=%s", EXTS_MEDIA, EXTS_ART, EXTS_LYRICS, EXTS_METADATA, EXTS_EXTRA)
+    logger.debug("Library media paths: %s", LIBS_MEDIA_PATH)
 
 
 PRESENT_YEAR: int = datetime.now().year

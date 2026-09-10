@@ -1,7 +1,25 @@
+import logging
 import shutil
 from pathlib import Path
 
+import pytest
+
 from mediatest.config import MediaTestConfigUtil
+
+
+def test_load_config_logs_config_source(caplog: pytest.LogCaptureFixture, tmp_path: Path):
+    caplog.set_level(logging.DEBUG)
+    source_config_path = Path(__file__).resolve().parents[2] / "mediatest-config.yml"
+    config_directory = tmp_path / "config"
+    config_directory.mkdir()
+    config_path = config_directory / source_config_path.name
+    shutil.copy(source_config_path, config_path)
+
+    config = MediaTestConfigUtil().load_config(config_path)
+
+    assert config is not None
+    assert "Attempting to load config from" in caplog.text
+    assert "Loaded config from" in caplog.text
 
 
 def test_load_config_from_path(tmp_path: Path):
