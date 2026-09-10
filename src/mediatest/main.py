@@ -94,4 +94,5 @@ def main() -> int:
     result = pytest.main(pytest_args)
     logger.info("pytest.main() returned %s", result)
     logger.debug("main() exiting with result=%s", result)
-    return result
+
+    sys.exit(int(result))
