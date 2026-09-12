@@ -5,13 +5,35 @@ Simple way to use PyTest to help you keep your media collections (e.g. mp3 music
 
 The idea is to write tests to enforce rules for your media collection.
 
-## Basic Usage
+## Installation
 
-Update settings in [tests/test_config.py](./tests/test_config.py) as needed, then:
+### (User) Install from GitHub repo
 
 ```bash
-pip install .
-pytest .
+pip install "git+https://github.com/bretttolbert/moongas-py-mediatest.git"
+```
+
+### (Developer) Clone GitHub repo and install (editable)
+
+```bash
+git clone git@github.com:bretttolbert/moongas-py-mediatest.git && cd mediatest
+python -m pip install -e .
+```
+
+## Usage
+
+Modify settings in [mediatest-config.yml](./mediatest-config.yml) as needed, then run `mediatest`:
+
+```bash
+python -m mediatest mediatest-config.yml
+```
+
+The main (source) entry point of mediatest invokes pytest to run the tests under the `tests/mediatests` path. This allows mediatest to load its Yaml configuration file. 
+
+For development purposes, if you just want to run pytest on the internal unit-tests for this package, run pytest with an `--ignore` argument to exclude the `tests/mediatests` path e.g.
+
+```bash
+pytest -vv -s --log-cli-level=DEBUG --ignore tests/media
 ```
 
 ## Example Test Failure
@@ -21,7 +43,7 @@ tests/test_media_lib_counts.py:97: AssertionError
 ======================================================= short test summary info ========================================================
 FAILED tests/test_media_artist_dirs.py::test_artist_yaml_exists[artist_path2151] - AssertionError: assert False
  +  where False = exists()
- +    where exists = PosixPath('/data/Music/Various Artists/artist.yaml').exists
+ +    where exists = PosixPath('/data/Music/Various Artists/artist.yml').exists
 FAILED tests/test_media_files_yaml.py::test_mediafile_albumartist_matches_artist_directory_name - AssertionError: File (path=/data/Music/Crosby, Stills and Nash/Crosby, Stills and Nash - Crosby, Stills and Nash [1969]/01.01 - Suite_ Judy Blue Eyes.mp3) albumartist 'Crosby, Stills & Nash' (escaped=Crosby, Stills & Nash)  does not match artist directory name 'Crosby, Stills and Nash'
 assert 'David Crosby & Stephen Stills' == 'Crosby, Stills & Nash'
   
@@ -33,7 +55,7 @@ assert 'David Crosby & Stephen Stills' == 'Crosby, Stills & Nash'
 
 ## Advanced Usage
 
-Only run filesystem tests (and not the slower files.yaml tests):
+Only run filesystem tests (and not the slower files.yml tests):
 
 ```bash
 pytest -k filesystem
@@ -48,7 +70,7 @@ pytest --ignore tests/media
 ```
 
 ## Depedencies
-- [mediascan](https://github.com/bretttolbert/mediascan) (Required for ID3 tag tests) - A simple and fast Go (golang) command-line utility to recursively scan a directory for media files, extract metadata (including ID3v2 tags from both MP3 and M4A files), and save the output in a simple YAML format (e.g. [files.yaml](https://github.com/bretttolbert/mediascan/blob/main/out/files.yaml), and a Python library with data classes for working with the YAML files output by `mediascan.go`.
+- [mediascan](https://github.com/bretttolbert/mediascan) (Required for ID3 tag tests) - A simple and fast Go (golang) command-line utility to recursively scan a directory for media files, extract metadata (including ID3v2 tags from both MP3 and M4A files), and save the output in a simple YAML format (e.g. [files.yml](https://github.com/bretttolbert/mediascan/blob/main/out/files.yml), and a Python library with data classes for working with the YAML files output by `mediascan.go`.
 
 ## Rules Enforced
 

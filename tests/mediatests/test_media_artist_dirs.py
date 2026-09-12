@@ -42,7 +42,7 @@ def test_artist_dir_is_not_empty(artist_path: Path):
 
 def test_artist_yaml_exists(artist_path: Path):
     """
-    That that verifies that artist.yaml file exists for the given artist path
+    That that verifies that artist.yml file exists for the given artist path
     """
-    artist_yaml_path = Path(artist_path) / "artist.yaml"
+    artist_yaml_path = Path(artist_path) / "artist.yml"
     assert artist_yaml_path.exists()

@@ -13,7 +13,7 @@ extsLyrics:
   - lrc
   - txt
 extsMetadata:
-  - yaml
+  - yml
 extsExtra:
   - pdf
 libGenresModeBlacklist: false
