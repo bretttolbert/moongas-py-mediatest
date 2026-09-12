@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Optional
+from typing import Callable, Optional, cast
 
 import pytest
 from mediascan.genres import Genre
@@ -32,6 +32,26 @@ def files_yaml_files() -> list[MediaFile]:
         return load_files_yaml(MEDIASCAN_FILES_YAML_PATH).files
     else:
         return []
+
+
+def media_file_indices() -> list[int]:
+    if not MEDIASCAN_FILES_YAML_PATH:
+        return []
+    try:
+        return list(range(len(load_files_yaml(MEDIASCAN_FILES_YAML_PATH).files)))
+    except (FileNotFoundError, OSError):
+        return []
+
+def media_file_parametrize(func: Callable[..., None]) -> Callable[..., None]:
+    decorator = pytest.mark.parametrize("file", media_file_indices(), indirect=True)
+    return decorator(func)
+
+# Helper fixture to extract individual files from your session fixture
+@pytest.fixture
+def file(request: pytest.FixtureRequest, files_yaml_files: list[MediaFile]) -> MediaFile:
+    # request.param will be the index of the file
+    index = cast(int, request.param)
+    return files_yaml_files[index]
 
 
 NO_ERRORS = "(no errors)"
@@ -70,17 +90,17 @@ def test_per_error(error: str):
     assert error == NO_ERRORS
 
 
-@pytest.mark.parametrize("file", files_yaml_files())
+@media_file_parametrize
 def test_mediafile_year_gt_zero(file: MediaFile):
     assert file.year > 0, f"{file.path}"
 
 
-@pytest.mark.parametrize("file", files_yaml_files())
+@media_file_parametrize
 def test_mediafile_years_lt_present(file: MediaFile):
     assert file.year <= PRESENT_YEAR, f"{file.path}"
 
 
-@pytest.mark.parametrize("file", files_yaml_files())
+@media_file_parametrize
 def test_mediafile_size_gt_min(file: MediaFile):
     assert file.size >= MINIMUM_FILESIZE, f"{file.path}"
 
@@ -92,12 +112,12 @@ def genre_string_to_enum(s: str) -> Optional[Genre]:
     return None
 
 
-@pytest.mark.parametrize("file", files_yaml_files())
+@media_file_parametrize
 def test_mediafile_allowed_genres(file: MediaFile):
     assert file.genre in get_all_genre_strings(), f"{file.path}"
 
 
-@pytest.mark.parametrize("file", files_yaml_files())
+@media_file_parametrize
 def test_mediafile_libs_genres_mode_whitelist(file: MediaFile):
     if LIB_GENRES_MODE_BLACKLIST:
         return
@@ -109,7 +129,7 @@ def test_mediafile_libs_genres_mode_whitelist(file: MediaFile):
             )
 
 
-@pytest.mark.parametrize("file", files_yaml_files())
+@media_file_parametrize
 def test_mediafile_libs_genres_mode_blacklist(file: MediaFile):
     if not LIB_GENRES_MODE_BLACKLIST:
         return
@@ -121,12 +141,12 @@ def test_mediafile_libs_genres_mode_blacklist(file: MediaFile):
             )
 
 
-@pytest.mark.parametrize("file", files_yaml_files())
+@media_file_parametrize
 def test_mediafile_artist_is_not_empty(file: MediaFile):
     assert len(file.artist) > 0, f"{file.path}"
 
 
-@pytest.mark.parametrize("file", files_yaml_files())
+@media_file_parametrize
 def test_mediafile_albumartist_is_not_empty(file: MediaFile):
     assert len(file.albumartist) > 0, f"{file.path}"
 
