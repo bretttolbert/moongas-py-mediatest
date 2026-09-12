@@ -14,6 +14,9 @@ from mediatest.config import (
 )
 from mediatest.path_utils import get_dir_path_filesize_gb, get_file_ext
 
+"""
+These tests verify that actual media file counts on the filesystem match the configuration
+"""
 
 @dataclass
 class MediaFileCounts:

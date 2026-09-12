@@ -4,6 +4,10 @@ from pathlib import Path
 from mediatest.config import ALLOWED_EXTS, LIB_COUNT, LIBS_MEDIA_PATH
 from mediatest.path_utils import get_file_ext
 
+"""
+These tests validate media files by scanning the lib directories on the filesystem
+"""
+
 # TODO: Write test to disallow periods in filenames except as file extension separator
 # TODO: Validate filenames, prohibited chars in filenames
 

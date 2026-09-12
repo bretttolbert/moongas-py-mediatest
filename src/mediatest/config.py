@@ -24,7 +24,6 @@ class MediaTestLibConfig(YAMLWizard):
 
 @dataclass
 class MediaTestConfig(YAMLWizard):
-    mediascan_files_yaml_path: str
     minimum_filesize: int
     exts_media: list[str]
     exts_art: list[str]
@@ -33,6 +32,7 @@ class MediaTestConfig(YAMLWizard):
     exts_extra: list[str]
     lib_genres_mode_blacklist: bool
     libs: list[MediaTestLibConfig]
+    mediascan_files_yaml_path: Optional[str] = None
 
     mediatest_rootdir: Optional[str] = None
 

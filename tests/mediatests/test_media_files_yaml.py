@@ -1,11 +1,19 @@
 from pathlib import Path
-from typing import Optional, Set
+from typing import Optional
 
 import pytest
 from mediascan.genres import Genre
 from mediascan.mediafile import MediaFile
-from mediascan.mediafiles import MediaFiles
 from mediascan.mediafiles_loader import load_files_yaml
+
+from mediatest.media_utils import get_all_genre_strings
+
+"""
+These tests are dependant on the mediascan-files.yml file.
+These tests can be skipped by configuring mediascanFilesYamlPath to 'null' 
+(or removing it from mediatest-config.yml)
+Some of these tests also examine the filesytem (e.g. verifying the paths in mediascan-files.yml exist)
+"""
 
 from mediatest.config import (
     LIB_COUNT,
@@ -17,7 +25,13 @@ from mediatest.config import (
     PRESENT_YEAR,
 )
 
-files = load_files_yaml(MEDIASCAN_FILES_YAML_PATH)
+
+@pytest.fixture(scope="session")
+def files_yaml_files() -> list[MediaFile]:
+    if MEDIASCAN_FILES_YAML_PATH is not None:
+        return load_files_yaml(MEDIASCAN_FILES_YAML_PATH).files
+    else:
+        return []
 
 
 NO_ERRORS = "(no errors)"
@@ -56,28 +70,19 @@ def test_per_error(error: str):
     assert error == NO_ERRORS
 
 
-@pytest.fixture(scope="session")
-def files_yaml_file() -> MediaFiles:
-    return files
-
-
-@pytest.mark.parametrize("file", files.files)
+@pytest.mark.parametrize("file", files_yaml_files())
 def test_mediafile_year_gt_zero(file: MediaFile):
     assert file.year > 0, f"{file.path}"
 
 
-@pytest.mark.parametrize("file", files.files)
+@pytest.mark.parametrize("file", files_yaml_files())
 def test_mediafile_years_lt_present(file: MediaFile):
     assert file.year <= PRESENT_YEAR, f"{file.path}"
 
 
-@pytest.mark.parametrize("file", files.files)
+@pytest.mark.parametrize("file", files_yaml_files())
 def test_mediafile_size_gt_min(file: MediaFile):
     assert file.size >= MINIMUM_FILESIZE, f"{file.path}"
-
-
-def get_all_genre_strings() -> list[str]:
-    return [g.value for g in Genre]
 
 
 def genre_string_to_enum(s: str) -> Optional[Genre]:
@@ -87,42 +92,12 @@ def genre_string_to_enum(s: str) -> Optional[Genre]:
     return None
 
 
-@pytest.mark.parametrize("file", files.files)
+@pytest.mark.parametrize("file", files_yaml_files())
 def test_mediafile_allowed_genres(file: MediaFile):
     assert file.genre in get_all_genre_strings(), f"{file.path}"
 
 
-@pytest.mark.parametrize("lib_idx", list(range(LIB_COUNT)))
-def test_lib_genres_no_dupes(lib_idx: int):
-    s: Set[str] = set()
-    for genre in LIBS_GENRES[lib_idx]:
-        if genre in s:
-            pytest.exit(f"Duplicate genre detected in LIB{lib_idx}_GENRES: {genre}")
-        s.add(genre)
-
-
-def test_lib_genres_no_intersections():
-    """TODO: Make this work for more than two libs"""
-    for idx in range(LIB_COUNT):
-        if idx == LIB_COUNT - 1:
-            return
-        intersection = set(LIBS_GENRES[idx]) & set(LIBS_GENRES[idx + 1])
-        if len(intersection):
-            pytest.exit(f"Duplicate genres in both LIB{idx + 1} and LIB{idx + 2}: {str(intersection)}")
-
-
-def test_lib_genres_all_genres_used():
-    for genre in get_all_genre_strings():
-        found = False
-        for i in range(LIB_COUNT):
-            if genre in LIBS_GENRES[i]:
-                found = True
-                break
-        if not found:
-            pytest.exit(f"Genre '{genre}' not in any lib genres whitelist. Did you forget to add it to test config?")
-
-
-@pytest.mark.parametrize("file", files.files)
+@pytest.mark.parametrize("file", files_yaml_files())
 def test_mediafile_libs_genres_mode_whitelist(file: MediaFile):
     if LIB_GENRES_MODE_BLACKLIST:
         return
@@ -134,7 +109,7 @@ def test_mediafile_libs_genres_mode_whitelist(file: MediaFile):
             )
 
 
-@pytest.mark.parametrize("file", files.files)
+@pytest.mark.parametrize("file", files_yaml_files())
 def test_mediafile_libs_genres_mode_blacklist(file: MediaFile):
     if not LIB_GENRES_MODE_BLACKLIST:
         return
@@ -146,12 +121,12 @@ def test_mediafile_libs_genres_mode_blacklist(file: MediaFile):
             )
 
 
-@pytest.mark.parametrize("file", files.files)
+@pytest.mark.parametrize("file", files_yaml_files())
 def test_mediafile_artist_is_not_empty(file: MediaFile):
     assert len(file.artist) > 0, f"{file.path}"
 
 
-@pytest.mark.parametrize("file", files.files)
+@pytest.mark.parametrize("file", files_yaml_files())
 def test_mediafile_albumartist_is_not_empty(file: MediaFile):
     assert len(file.albumartist) > 0, f"{file.path}"
 
@@ -162,7 +137,7 @@ def test_mediafile_albumartist_same_for_every_track_in_every_album():
     but all tracks in a an albums should have the same albumartist e.g. "Dr. Dre"
     """
     albums: dict[str, str] = {}
-    for file in files.files:
+    for file in files_yaml_files():
         albumkey = f"{file.albumartist} - {file.album} [{file.year}]"
         if albumkey in albums:
             assert albums[albumkey] == file.albumartist
@@ -185,7 +160,7 @@ def test_mediafile_albumartist_matches_artist_directory_name():
     and it should match the artist directory name (after escaping)
     """
     artists: dict[str, str] = {}
-    for file in files.files:
+    for file in files_yaml_files():
         artist_dir_name = str(Path(file.path).parent.parent.name)
         albumartist_escaped = escape_artist_name(file.albumartist)
         if artist_dir_name in artists:
@@ -205,7 +180,7 @@ def run_test_mediafile(tag_type: str, tag_type_2: Optional[str] = None) -> list[
     """
     errors: list[str] = []
     grouped: dict[str, list[MediaFile]] = {}
-    for file in files.files:
+    for file in files_yaml_files():
         key = str(getattr(file, tag_type)).upper()
         if key in grouped:
             grouped[key].append(file)

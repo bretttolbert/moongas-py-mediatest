@@ -4,8 +4,11 @@ from pathlib import Path
 from mediatest.config import LIB_COUNT, LIBS_MEDIA_PATH
 from mediatest.path_utils import get_path_depth, is_dir_with_subdirs
 
-# TODO: Write test to find duplicated artists, e.g. "The Dave Matthews Band" vs "Dave Matthews Band"
+"""
+Filesystem tests that validate artist directories
+"""
 
+# TODO: Write test to find duplicated artists, e.g. "The Dave Matthews Band" vs "Dave Matthews Band"
 
 def get_artist_dir_paths(media_lib_path: Path) -> list[Path]:
     ret: set[Path] = set()

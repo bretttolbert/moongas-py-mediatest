@@ -6,6 +6,9 @@ from mediascan.utils.path.album_path import AlbumPathBuilder
 from mediatest.config import EXTS_MEDIA, LIB_COUNT, LIBS_MEDIA_PATH
 from mediatest.path_utils import get_path_depth, is_dir_with_files
 
+"""
+Filesystem tests that validate album directories
+"""
 
 def get_album_dir_paths(media_lib_path: Path) -> list[Path]:
     ret: set[Path] = set()
