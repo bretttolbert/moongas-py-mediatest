@@ -36,7 +36,7 @@ def load_yaml_media_files() -> list[MediaFile]:
 
 
 @pytest.fixture(scope="session")
-def files_yaml_files() -> list[MediaFile]:
+def files() -> list[MediaFile]:
     return load_yaml_media_files()
 
 
@@ -52,11 +52,11 @@ def media_file_parametrize(func: Callable[..., None]) -> Callable[..., None]:
 # Helper fixture to extract individual files from your session fixture
 @pytest.fixture
 def file(
-    request: pytest.FixtureRequest, files_yaml_files: list[MediaFile]
+    request: pytest.FixtureRequest, files: list[MediaFile]
 ) -> MediaFile:
     # request.param will be the index of the file
     index = cast(int, request.param)
-    return files_yaml_files[index]
+    return files[index]
 
 
 NO_ERRORS = "(no errors)"
