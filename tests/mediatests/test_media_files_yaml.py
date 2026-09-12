@@ -26,29 +26,34 @@ from mediatest.config import (
 )
 
 
+def load_yaml_media_files() -> list[MediaFile]:
+    if MEDIASCAN_FILES_YAML_PATH is None:
+        return []
+    try:
+        return load_files_yaml(MEDIASCAN_FILES_YAML_PATH).files
+    except (FileNotFoundError, OSError):
+        return []
+
+
 @pytest.fixture(scope="session")
 def files_yaml_files() -> list[MediaFile]:
-    if MEDIASCAN_FILES_YAML_PATH is not None:
-        return load_files_yaml(MEDIASCAN_FILES_YAML_PATH).files
-    else:
-        return []
+    return load_yaml_media_files()
 
 
 def media_file_indices() -> list[int]:
-    if not MEDIASCAN_FILES_YAML_PATH:
-        return []
-    try:
-        return list(range(len(load_files_yaml(MEDIASCAN_FILES_YAML_PATH).files)))
-    except (FileNotFoundError, OSError):
-        return []
+    return list(range(len(load_yaml_media_files())))
+
 
 def media_file_parametrize(func: Callable[..., None]) -> Callable[..., None]:
     decorator = pytest.mark.parametrize("file", media_file_indices(), indirect=True)
     return decorator(func)
 
+
 # Helper fixture to extract individual files from your session fixture
 @pytest.fixture
-def file(request: pytest.FixtureRequest, files_yaml_files: list[MediaFile]) -> MediaFile:
+def file(
+    request: pytest.FixtureRequest, files_yaml_files: list[MediaFile]
+) -> MediaFile:
     # request.param will be the index of the file
     index = cast(int, request.param)
     return files_yaml_files[index]
@@ -124,9 +129,9 @@ def test_mediafile_libs_genres_mode_whitelist(file: MediaFile):
     for idx in range(LIB_COUNT):
         if file.path.find(LIBS_MEDIA_PATH[idx]) != -1:
             g = genre_string_to_enum(file.genre)
-            assert g is not None and g in LIBS_GENRES[idx], (
-                f"{file.path} (genre: {file.genre}) is not allowed by by LIB{idx + 1} LIBS_GENRES"
-            )
+            assert (
+                g is not None and g in LIBS_GENRES[idx]
+            ), f"{file.path} (genre: {file.genre}) is not allowed by by LIB{idx + 1} LIBS_GENRES"
 
 
 @media_file_parametrize
@@ -136,9 +141,9 @@ def test_mediafile_libs_genres_mode_blacklist(file: MediaFile):
     for idx in range(LIB_COUNT):
         if file.path.find(LIBS_MEDIA_PATH[idx]) != -1:
             g = genre_string_to_enum(file.genre)
-            assert g is not None and g not in LIBS_GENRES[idx], (
-                f"{file.path} (genre: {file.genre}) is prohibited by LIB{idx + 1} LIBS_GENRES"
-            )
+            assert (
+                g is not None and g not in LIBS_GENRES[idx]
+            ), f"{file.path} (genre: {file.genre}) is prohibited by LIB{idx + 1} LIBS_GENRES"
 
 
 @media_file_parametrize
@@ -151,13 +156,15 @@ def test_mediafile_albumartist_is_not_empty(file: MediaFile):
     assert len(file.albumartist) > 0, f"{file.path}"
 
 
-def test_mediafile_albumartist_same_for_every_track_in_every_album():
+def test_mediafile_albumartist_same_for_every_track_in_every_album(
+    files: list[MediaFile],
+):
     """
     Different tracks may have different artists e.g. "Dr. Dre feat. Snoop Dog"
     but all tracks in a an albums should have the same albumartist e.g. "Dr. Dre"
     """
     albums: dict[str, str] = {}
-    for file in files_yaml_files():
+    for file in files:
         albumkey = f"{file.albumartist} - {file.album} [{file.year}]"
         if albumkey in albums:
             assert albums[albumkey] == file.albumartist
@@ -173,20 +180,20 @@ def escape_artist_name(name: str):
     return name.replace(".", "_")
 
 
-def test_mediafile_albumartist_matches_artist_directory_name():
+def test_mediafile_albumartist_matches_artist_directory_name(files: list[MediaFile]):
     """
     Different tracks may have different artists e.g. "Dr. Dre feat. Snoop Dog"
     but all tracks under a given artist folder e.g. "Dr_ Dre" should have the same albumartist e.g. "Dr. Dre"
     and it should match the artist directory name (after escaping)
     """
     artists: dict[str, str] = {}
-    for file in files_yaml_files():
+    for file in files:
         artist_dir_name = str(Path(file.path).parent.parent.name)
         albumartist_escaped = escape_artist_name(file.albumartist)
         if artist_dir_name in artists:
-            assert artists[artist_dir_name] == albumartist_escaped, (
-                f"File (path={file.path}) albumartist '{file.albumartist}' (escaped={albumartist_escaped})  does not match artist directory name '{artist_dir_name}'"
-            )
+            assert (
+                artists[artist_dir_name] == albumartist_escaped
+            ), f"File (path={file.path}) albumartist '{file.albumartist}' (escaped={albumartist_escaped})  does not match artist directory name '{artist_dir_name}'"
         else:
             artists[artist_dir_name] = albumartist_escaped
 
@@ -200,7 +207,7 @@ def run_test_mediafile(tag_type: str, tag_type_2: Optional[str] = None) -> list[
     """
     errors: list[str] = []
     grouped: dict[str, list[MediaFile]] = {}
-    for file in files_yaml_files():
+    for file in load_yaml_media_files():
         key = str(getattr(file, tag_type)).upper()
         if key in grouped:
             grouped[key].append(file)
